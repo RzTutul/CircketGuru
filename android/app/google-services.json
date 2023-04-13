@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "975682768668",
+    "project_id": "cricket-guru-248d3",
+    "storage_bucket": "cricket-guru-248d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975682768668:android:ad633499acb7bc7420b4d9",
+        "android_client_info": {
+          "package_name": "com.cricketguru.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975682768668-hfoh5bbm5jb5f79ojaeiilprvr4u4o44.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cricketguru.app",
+            "certificate_hash": "110813a89d497d0a70e2e9cf846b07bfd350399a"
+          }
+        },
+        {
+          "client_id": "975682768668-rbofo0ajflc971oeckdssp8vt3l3ochj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4PdZlHCMj7s5giF1nVzUG18C2uH1bT44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975682768668-djaqvhuka3evccc75lovtsibc010pe1s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "975682768668-5gmii7vrbpio5vgh12c8rh2u2kts9n4m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.cricketguru.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

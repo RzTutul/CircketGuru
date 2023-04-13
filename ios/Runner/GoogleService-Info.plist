@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>975682768668-5gmii7vrbpio5vgh12c8rh2u2kts9n4m.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.975682768668-5gmii7vrbpio5vgh12c8rh2u2kts9n4m</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDH9usLKAcYXOGUfC625V5MsaqoX5UxxeE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>975682768668</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.cricketguru.app</string>
+	<key>PROJECT_ID</key>
+	<string>cricket-guru-248d3</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cricket-guru-248d3.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:975682768668:ios:f5bb1289f0241b0220b4d9</string>
+</dict>
+</plist>

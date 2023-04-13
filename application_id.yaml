@@ -1,0 +1,7 @@
+flutter_application_id:
+  android:
+    id: "com.cricketguru.app"
+    name: "Cricket Guru"
+  ios:
+    id: "com.cricketguru.app"
+    name: "Cricket Guru"
