@@ -32,6 +32,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'fragment/current_matches.dart';
+
 class Home extends StatefulWidget {
 
 
@@ -60,6 +62,7 @@ class _HomeState extends ResumableState<Home> {
 
   List<Widget> fragments =[
     Default(),
+    CurrentMatches(),
     Matches(),
     Ranking(),
     Club(),
@@ -161,6 +164,17 @@ class _HomeState extends ResumableState<Home> {
 
                                     icon: LineIcons.home,
                                     text: 'Home',
+                                    borderRadius: BorderRadius.circular(8),
+                                    textStyle: TextStyle(
+                                      color: Theme.of(context).accentColor,
+                                    ),
+
+                                  ),
+
+                              GButton(
+
+                                    icon: LineIcons.calendarCheck,
+                                    text: 'Current Match',
                                     borderRadius: BorderRadius.circular(8),
                                     textStyle: TextStyle(
                                       color: Theme.of(context).accentColor,
@@ -300,7 +314,7 @@ class _HomeState extends ResumableState<Home> {
                         itemBuilder: (context, position) {
                           return fragments[position];
                         },
-                        itemCount: 5, // Can be null
+                        itemCount: fragments.length, // Can be null
                       ),
 
                     ),

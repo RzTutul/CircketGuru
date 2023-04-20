@@ -102,8 +102,10 @@ class apiRest{
 
   static competitionsList() {
     return configUrl("competition/all/");
-
   }
+
+
+
   static getAppConfig() {
     return configUrl("app/config/");
 
@@ -138,8 +140,31 @@ class apiRest{
 
   static getMatchById(String id) {
     return configUrl("match/by/id/"+id+"/");
-
   }
+   static  getEScoreMatch() async{
+     final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/matches/v1/recent');
+     final headers = {
+       'X-RapidAPI-Key': 'b02f18ba79msh5aeb7cc8654aa62p1a3ec8jsnd35b04eea9f5',
+       'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com',
+       'useQueryString': 'true'
+     };
+     final response = await http.get(url, headers: headers);
+     if (response.statusCode == 200) {
+       final responseBody = jsonDecode(response.body);
+       print(responseBody);
+     } else {
+       print('Request failed with status: ${response.statusCode}.');
+     }
+
+     return response;
+  }
+   static Uri getLiveMatch() {
+    return Uri.parse("https://api.cricapi.com/v1/currentMatches?apikey=ba0e71f6-aff7-4466-839a-1ab9a09f20db&offset=0");
+  }
+
+
+
+
 
   static Uri sendMessage() {
     return configUrl("support/add/");
