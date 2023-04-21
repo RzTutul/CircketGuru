@@ -24,31 +24,27 @@ import 'package:app/screens/tryagain.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../model/current_match_model.dart';
-import '../../model/scoreboard.dart';
-
-class RecentMatchDetails extends StatefulWidget {
-  RecentMatch match;
+class MatchDetail extends StatefulWidget {
+  Match match;
   int tag;
   bool back;
 
-  RecentMatchDetails({this.match, this.tag,this.back = true});
+  MatchDetail({this.match, this.tag,this.back = true});
 
   @override
   _MatchDetailState createState() => _MatchDetailState();
 }
 
-class _MatchDetailState extends State<RecentMatchDetails> {
+class _MatchDetailState extends State<MatchDetail> {
   int selected_index = 0;
 
-  List<RecentMatch> matchesList = [];
+  List<Match> matchesList = [];
   List<Statistic> statisticsList = [];
-  ScoreBoardResponse scoreboard;
   List<Event> eventsList = [];
   List<table.Table> tablesList = [];
 
   String state_matches =  "progress";
-  String state_scoreboard =  "progress";
+  String state_statistics =  "progress";
   String state_events =  "progress";
   String state_raking =  "progress";
   StreamSubscription receiver;
@@ -133,7 +129,61 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       String event = '${messages["event"]}';
       print(event);
 
+      if(type == "match"){
+        String id = '${messages["id"]}';
+        if(id.toString()  ==  widget.match.id.toString()){
+          if(event  != "yes"){
 
+            String club_home_result = '${messages["club_home_result"]}';
+            String club_away_result = '${messages["club_away_result"]}';
+            String club_away_sub_result = '${messages["club_away_sub_result"]}';
+            String club_home_sub_result = '${messages["club_home_sub_result"]}';
+            setState(() {
+              if(club_home_result != null && club_home_result != "null")
+                widget.match.homeresult = club_home_result;
+              if(club_away_result != null && club_away_result != "null")
+                widget.match.awayresult = club_away_result;
+              if(club_away_sub_result != null && club_away_sub_result != "null")
+                widget.match.awaysubresult = club_away_sub_result;
+              if(club_home_sub_result != null && club_home_sub_result != "null")
+                widget.match.homesubresult = club_home_sub_result;
+            });
+          }else{
+
+
+
+            String event_id = '${messages["event_id"]}';
+            String event_name = '${messages["event_name"]}';
+            String event_image = '${messages["event_image"]}';
+            String event_title = '${messages["event_title"]}';
+            String event_subtitle = '${messages["event_subtitle"]}';
+            String event_time = '${messages["event_time"]}';
+            String event_type = '${messages["event_type"]}';
+
+
+            setState(() {
+              _notif_event  =  Event(id: int.parse(event_id),name: event_name,image: event_image,time: event_time,subtitle: event_subtitle,title: event_title,type: event_type);
+              event_widget_bottom = 20;
+
+            });
+            Future.delayed(const Duration(milliseconds: 7000), () {
+              setState(() {
+                if(eventsList != null) {
+                  event_widget_bottom = -100;
+                  bool notexist = false;
+                  for (Event envt in eventsList) {
+                    if (envt.id == _notif_event.id) {
+                      notexist = true;
+                    }
+                  }
+                  if (notexist == false)
+                    eventsList.add(_notif_event);
+                }
+              });
+            });
+          }
+        }
+      }
     });
 
   }
@@ -164,7 +214,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                       appBar: AppBar(
                         backgroundColor: Theme.of(context).primaryColor,
                         centerTitle: false,
-                        title: Text(widget.match.matchInfo.team1.teamName + " vs " + widget.match.matchInfo.team2.teamName),
+                        title: Text(widget.match.homeclub.name + " vs " + widget.match.awayclub.name),
                         elevation: 0,
                         iconTheme: IconThemeData(color: Theme.of(context).textTheme.bodyText1.color),
                         leading: new IconButton(
@@ -190,7 +240,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                               child: Column(
                                 children: [
                                   Hero(
-                                    tag: "hero_match_"+ widget.match.matchInfo.matchId.toString()+"_"+widget.tag.toString(),
+                                    tag: "hero_match_"+ widget.match.id.toString()+"_"+widget.tag.toString(),
                                     transitionOnUserGestures: true,
                                     child: Material(
                                       type: MaterialType.transparency, // likely needed
@@ -198,43 +248,43 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                         height: 130,
                                         child: Stack(
                                           children: [
-                                              Positioned(
-                                                left: 20,
-                                                top: 20,
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      margin: EdgeInsets.only(bottom: 10),
-                                                      height: 60,
-                                                      width: 60,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(10),
-                                                          border: Border.all(color: Theme.of(context).accentColor,width: 2)
-                                                      ),
-                                                     /* child: Padding(
-                                                        padding: const EdgeInsets.all(8.0),
-                                                        child: CachedNetworkImage(imageUrl: widget.match.homeclub.image),
-                                                      ),*/
+                                            Positioned(
+                                              left: 20,
+                                              top: 20,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Container(
+                                                    margin: EdgeInsets.only(bottom: 10),
+                                                    height: 60,
+                                                    width: 60,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        border: Border.all(color: Theme.of(context).accentColor,width: 2)
                                                     ),
-                                                    Text(
-                                                        widget.match.matchInfo.team1.teamName,
-                                                        style: TextStyle(
-                                                            color: Theme.of(context).textTheme.bodyText2.color,
-                                                            fontSize: 12,
-                                                            fontWeight: FontWeight.w400
-                                                        )
-                                                    )
-                                                  ],
-                                                ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: CachedNetworkImage(imageUrl: widget.match.homeclub.image),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                      widget.match.homeclub.name,
+                                                      style: TextStyle(
+                                                          color: Theme.of(context).textTheme.bodyText2.color,
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.w400
+                                                      )
+                                                  )
+                                                ],
                                               ),
-                                              Positioned(
-                                                  top: 20,
-                                                  left: 140,
-                                                  right: 140,
-                                                  child:  Center(child: buildDetail(context))
-                                              ),
-                                              Positioned(
+                                            ),
+                                            Positioned(
+                                                top: 20,
+                                                left: 140,
+                                                right: 140,
+                                                child:  Center(child: buildDetail(context))
+                                            ),
+                                            Positioned(
                                               right: 20,
                                               top: 20,
                                               child: Column(
@@ -248,13 +298,13 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                                         borderRadius: BorderRadius.circular(10),
                                                         border: Border.all(color: Theme.of(context).accentColor,width: 2)
                                                     ),
-                                                   /* child: Padding(
+                                                    child: Padding(
                                                       padding: const EdgeInsets.all(8.0),
                                                       child: CachedNetworkImage(imageUrl: widget.match.awayclub.image),
-                                                    ),*/
+                                                    ),
                                                   ),
                                                   Text(
-                                                    widget.match.matchInfo.team2.teamName,
+                                                    widget.match.awayclub.name,
                                                     style: TextStyle(
                                                         color: Theme.of(context).textTheme.bodyText2.color,
                                                         fontSize: 12,
@@ -275,9 +325,11 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                       scrollDirection: Axis.horizontal,
                                       children: [
                                         buildTab("MATCH FACTS",0),
-                                        buildTab("SCOREBOARD",1),
-                                        buildTab("COMMENTARY",2),
-
+                                        buildTab("STATISTICS",1),
+                                        if(widget.match.highlights != null)
+                                          buildTab("HIGHLIGHTS",2),
+                                        buildTab("RANKING",3),
+                                        buildTab("HEAD TO HEAD",4),
                                       ],
                                     ),
                                   ),
@@ -331,10 +383,250 @@ class _MatchDetailState extends State<RecentMatchDetails> {
     );
   }
   buildDetail(BuildContext context) {
-
+    switch(widget.match.state){
+      case "playing":
+        return buildPlaying(context);
+        break;
+      case "programmed":
+        return buildProgrammed(context);
+        break;
+      case "ended":
+        return buildEnded(context);
+        break;
+      case "postponed":
+        return buildPostponed(context);
+        break;
+      case "canceled":
+        return buildCanceled(context);
+        break;
+    }
   }
 
+  buildEnded(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        if(widget.match.homeresult!= null && widget.match.awayresult != null)
+          Text(
+            widget.match.homeresult + " - "+widget.match.awayresult,
+            style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText1.color,
+                fontSize: 16,
+                fontWeight: FontWeight.w800
+            ),
+          ),
+        if(widget.match.homesubresult!= null && widget.match.awaysubresult != null)
+          Text(
+            widget.match.homesubresult + " - "+widget.match.awaysubresult,
+            style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText2.color,
+                fontSize: 12,
+                fontWeight: FontWeight.w800
+            ),
+          ),
+        SizedBox(
+            height: 10),
+        SizedBox(
+          height: 10,
+          width: 100,
+          child: Divider(),
+        ),
+        if(widget.match.highlights != null)
+          TextButton.icon(
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(5),
+                  textStyle: TextStyle(
+                    color: Theme.of(context).accentColor,
+                  )
+              ),
+              onPressed: (){
+                _launchURL(widget.match.highlights);
+              },
+              icon: Icon(LineIcons.play,size: 11,color: Colors.white),
+              label: Text("Highlights",
+                style: TextStyle
+                  (
+                    color: Colors.white,
+                    fontSize: 11
+                ),
+              )
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top:8.0),
+            child: Text(
+              widget.match.time + widget.match.date,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText1.color,
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+  buildPlaying(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        if(widget.match.homeresult!= null && widget.match.awayresult != null)
+          Text(
+            widget.match.homeresult + " - "+widget.match.awayresult,
+            style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText1.color,
+                fontSize: 16,
+                fontWeight: FontWeight.w800
+            ),
+          ),
+        SizedBox(height: 5),
+        if(widget.match.homesubresult!= null && widget.match.awaysubresult != null)
+          Text(
+            widget.match.homesubresult + " - "+widget.match.awaysubresult,
+            style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText2.color,
+                fontSize: 13,
+                fontWeight: FontWeight.w800
+            ),
+          ),
+        SizedBox(height: 5),
+        Wrap(
+          direction: Axis.vertical,
+          children: <Widget>[
+            Container(
+              height: 50,
+              child: LiveWidget(),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+  buildProgrammed(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: 15),
+        Text(
+          widget.match.time,
+          style: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w900,
+              fontSize: 25
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          widget.match.date,
+          style: TextStyle(
+              color: Theme.of(context).textTheme.bodyText1.color,
+              fontWeight: FontWeight.w500,
+              fontSize: 11
+          ),
+        ),
 
+      ],
+    );
+  }
+  buildCanceled(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: 5),
+        Text(
+          "Canceled",
+          style: TextStyle(
+            color: Theme.of(context).accentColor,
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          widget.match.time,
+          style: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+              decoration: TextDecoration.lineThrough
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          widget.match.date,
+          style: TextStyle(
+              color: Theme.of(context).textTheme.bodyText1.color,
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
+              decoration: TextDecoration.lineThrough
+          ),
+        ),
+        SizedBox(height: 5),
+        if(widget.match.stadium != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset("assets/images/stadium.png",color: Theme.of(context).textTheme.bodyText2.color,height: 18,width:18),
+              SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  widget.match.stadium,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyText2.color,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11
+                  ),
+                ),
+              )
+            ],
+          )
+      ],
+    );
+  }
+  buildPostponed(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(height: 5),
+        Text(
+          "Postponed",
+          style: TextStyle(
+            color: Theme.of(context).accentColor,
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          widget.match.time,
+          style: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+              decoration: TextDecoration.lineThrough
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          widget.match.date,
+          style: TextStyle(
+              color: Theme.of(context).textTheme.bodyText1.color,
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
+              decoration: TextDecoration.lineThrough
+          ),
+        ),
+      ],
+    );
+  }
   buildTab(String s,int index) {
     return GestureDetector(
       onTap: (){
@@ -367,9 +659,9 @@ class _MatchDetailState extends State<RecentMatchDetails> {
             Text(
               s,
               style: TextStyle(
-                color: (selected_index == index)? Theme.of(context).textTheme.subtitle1.color:Theme.of(context).textTheme.subtitle2.color.withOpacity(0.5),
-                fontSize: 12,
-                fontWeight: FontWeight.bold
+                  color: (selected_index == index)? Theme.of(context).textTheme.subtitle1.color:Theme.of(context).textTheme.subtitle2.color.withOpacity(0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold
               ),
             ),
             Visibility(
@@ -392,7 +684,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
         return buildInfos();
         break;
       case 1:
-        return buildScoreboard();
+        return buildStats();
         break;
       case 2:
         return buildHightlights();
@@ -411,220 +703,114 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
   Widget buildInfos() {
     return Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-      child: RefreshIndicator(
-        onRefresh: _getEvents,
-        child: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.only(top: 15,bottom: 10),
+        child: RefreshIndicator(
+          onRefresh: _getEvents,
+          child: ListView(
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 15,bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+
+                    CachedNetworkImage(imageUrl: widget.match.competition.image,color: Theme.of(context).textTheme.bodyText2.color,height: 20,width: 20),
+                    SizedBox(width: 5),
+                    Text(
+                      widget.match.competition.name +" - "+widget.match.title,
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color:  Theme.of(context).textTheme.bodyText2.color
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if(widget.match.stadium != null)
+                Container(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/images/stadium.png",color: Theme.of(context).textTheme.bodyText2.color,height: 18,width:18),
+                      SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          widget.match.stadium,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyText2.color,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              Divider(),
+              buildEvents(),
+            ],
+          ),
+        )
+    );
+  }
+  Widget buildStats() {
+    switch(state_statistics){
+      case "success":
+        return  ListView.builder(
+          itemCount: statisticsList.length,
+          itemBuilder: (context, jndex) {
+            return  Container(
+              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 17),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-
-                  SizedBox(width: 5),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: (int.parse(statisticsList[jndex].away.replaceAll(new RegExp(r'[^0-9]'),'')) < int.parse(statisticsList[jndex].home.replaceAll(new RegExp(r'[^0-9]'),'')) )? Colors.blueAccent.withOpacity(0.2):Colors.transparent,
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Text(
+                      statisticsList[jndex].home,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16
+                      ),
+                    ),
+                  ),
                   Text(
-                    widget.match.matchInfo.team1.teamName +" - "+widget.match.matchInfo.team2.teamName,
+                    statisticsList[jndex].name,
                     style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color:  Theme.of(context).textTheme.bodyText2.color
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: (int.parse(statisticsList[jndex].away.replaceAll(new RegExp(r'[^0-9]'),'')) > int.parse(statisticsList[jndex].home.replaceAll(new RegExp(r'[^0-9]'),'')) )? Colors.red.withOpacity(0.2):Colors.transparent,
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Text(
+                      statisticsList[jndex].away,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-              Container(
-              padding: EdgeInsets.only(bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset("assets/images/stadium.png",color: Theme.of(context).textTheme.bodyText2.color,height: 18,width:18),
-                  SizedBox(width: 5),
-                  Flexible(
-                    child: Text(
-                      widget.match.matchInfo.venueInfo.ground,
-                      maxLines: 1,
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText2.color,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-              Divider(),
-              buildEvents(),
-          ],
-        ),
-      )
-    );
-  }
-  Widget buildScoreboard() {
-    switch(state_scoreboard){
-      case "success":
-        return SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: 560,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ListView.builder(
-                      itemCount: scoreboard.scoreCard.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context,index){
-                        var item = scoreboard.scoreCard[index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            //Batting Data
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10.0),
-                              child: ExtractHeader(width: 300,title: item.batTeamDetails.batTeamName,fontSize: 20,),
-                            ),
-                            Row(
-                              children: [
-                                ExtractHeader(width: 150,title: "Batting",fontSize: 12,),
-                                ExtractHeader(width: 150,title: "",fontSize: 12,),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ExtractHeader(width: 50,title: "R",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "B",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "4s",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "6s",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "SR",fontSize: 12,),
-                              ],
-                            ),
-
-                            ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount:item.batTeamDetails.batsmenData.length,
-                                itemBuilder: (context,batIndex){
-                                  String key = item.batTeamDetails.batsmenData.keys.elementAt(batIndex);
-                                  var batdata = item.batTeamDetails.batsmenData[key];
-                                  return Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Row(
-                                          children: [
-                                             SizedBox(
-                                      width: 150,
-                                                child: Text(batdata.batName)),
-                                             SizedBox(
-                                      width: 150,
-                                                child: Text(batdata.outDesc)),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text(batdata.runs==null?"0":batdata.runs.toString())),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${batdata.balls}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${batdata.fours}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${batdata.sixes}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${batdata.strikeRate}")),
-
-                                          ],
-                                        ),
-                                      ),
-                                      Divider(
-                                        height: 0.6,
-                                      )
-                                    ],
-                                  );
-                            }),
-
-
-                            //Balling Data
-
-                            Row(
-                              children: [
-                                ExtractHeader(width: 150,title: "Balling",fontSize: 12,),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ExtractHeader(width: 50,title: "O",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "M",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "R",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "W",fontSize: 12,),
-                                ExtractHeader(width: 50,title: "B",fontSize: 12,),
-                              ],
-                            ),
-                            //Bolwing Data
-
-                            ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount:item.bowlTeamDetails.bowlersData.length,
-                                itemBuilder: (context,batIndex){
-                                  String key = item.bowlTeamDetails.bowlersData.keys.elementAt(batIndex);
-                                  var balldata = item.bowlTeamDetails.bowlersData[key];
-                                  return Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Row(
-                                          children: [
-                                            SizedBox(
-                                                width: 150,
-                                                child: Text(balldata.bowlName)),
-
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text(balldata.overs==null?"0":balldata.overs.toString())),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${balldata.maidens}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${balldata.runs}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${balldata.wickets}")),
-                                            SizedBox(
-                                                width: 50,
-                                                child: Text("${balldata.balls}")),
-
-                                          ],
-                                        ),
-                                      ),
-                                      Divider(
-                                        height: 0.6,
-                                      )
-                                    ],
-                                  );
-                                })
-                          ],
-                        );
-                  }),
-                ],
-              ),
-            ),
-          ),
+            );
+          },
         );
         break;
       case "progress":
@@ -645,7 +831,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
         return  ListView.builder(
           itemCount: matchesList.length,
           itemBuilder: (context, jndex) {
-            return  Container(color: Colors.red,height: 100,width: 1000,);
+            return  MatchMiniWidget(match :  matchesList[jndex],navigate: navigate);
           },
         );
         break;
@@ -667,14 +853,14 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       children: [
         GestureDetector(
           onTap: (){
-            //_launchURL(widget.match.highlights);
+            _launchURL(widget.match.highlights);
           },
           child: Container(
             margin: EdgeInsets.all(10),
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.black,
+                color: Colors.black,
                 gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
@@ -686,7 +872,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                       Colors.black,
                       Theme.of(context).accentColor
                     ]),
-              borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10)
             ),
             child: Stack(
               children: [
@@ -694,7 +880,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                   top: 25,
                   left: 15,
                   child: Text(
-                    "RecentMatch Hightlights",
+                    "Match Hightlights",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.normal,
@@ -704,15 +890,21 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                 ),
                 Positioned(
                   top: 55,
-                   left: 15,
-                    child: Text(
-                      widget.match.matchInfo.team1.teamName,
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900,
-                          color:  Colors.white
-                      ),
+                  left: 15,
+                  child: Text(
+                    widget.match.competition.name +" - "+widget.match.title,
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color:  Colors.white
                     ),
+                  ),
+                ),
+                Positioned(
+                  right: 15,
+                  top: 15,
+                  bottom: 15,
+                  child: CachedNetworkImage(imageUrl: widget.match.competition.image,color: Colors.white.withOpacity(0.2)),
                 ),
                 Positioned(
                   bottom: 5,
@@ -724,27 +916,38 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                   ),
                 ),
                 Positioned(
-                  left: 10,
-                  bottom: 10,
-                  child:Row(
-                    children: [
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                            Text(
-                              widget.match.matchInfo.state,
-                              style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w800
+                    left: 10,
+                    bottom: 10,
+                    child:Row(
+                      children: [
+                        CachedNetworkImage(imageUrl: widget.match.homeclub.image,height: 60,width: 60),
+                        SizedBox(width: 10),
+                        Column(
+                          children: [
+                            if(widget.match.homeresult!= null && widget.match.awayresult != null)
+                              Text(
+                                widget.match.homeresult + " - "+widget.match.awayresult,
+                                style: TextStyle(
+                                    color:Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800
+                                ),
                               ),
-                            ),
-
-                        ],
-                      ),
-                      SizedBox(width: 10),
-                    ],
-                  )
+                            if(widget.match.homesubresult!= null && widget.match.awaysubresult != null)
+                              Text(
+                                widget.match.homesubresult + " - "+widget.match.awaysubresult,
+                                style: TextStyle(
+                                    color:Colors.white70,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800
+                                ),
+                              ),
+                          ],
+                        ),
+                        SizedBox(width: 10),
+                        CachedNetworkImage(imageUrl: widget.match.awayclub.image,height: 60,width: 60)
+                      ],
+                    )
                 )
               ],
             ),
@@ -753,7 +956,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       ],
     );
   }
-  Future<List<RecentMatch>>  _getMatchsList(RecentMatch match) async{
+  Future<List<Match>>  _getMatchsList(Match match) async{
     setState(() {
       state_matches = "progress";
     });
@@ -761,7 +964,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
     var response;
     var statusCode = 200;
     try {
-      response = await http.get(apiRest.matchesByClubs(1,2));
+      response = await http.get(apiRest.matchesByClubs(match.homeclub.id,match.awayclub.id));
     } catch (ex) {
       statusCode = 500;
     }
@@ -772,8 +975,8 @@ class _MatchDetailState extends State<RecentMatchDetails> {
         var jsonData =  convert.jsonDecode(response.body);
 
         for(Map i in jsonData){
-            RecentMatch _match = RecentMatch.fromJson(i as String);
-             matchesList.add(_match);
+          Match _match = Match.fromJson(i);
+          matchesList.add(_match);
         }
         setState(() {
           state_matches = "success";
@@ -791,15 +994,15 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   }
 
 
-  Future<List<RecentMatch>>  _getStatistics(RecentMatch match) async{
+  Future<List<Match>>  _getStatistics(Match match) async{
     setState(() {
-      state_scoreboard = "progress";
+      state_statistics = "progress";
     });
     statisticsList.clear();
     var response;
     var statusCode = 200;
     try {
-      response = await apiRest.getScoreBoard(match.matchInfo.matchId);
+      response = await http.get(apiRest.matchStatistics(match.id));
     } catch (ex) {
       statusCode = 500;
     }
@@ -807,22 +1010,23 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
     if (statusCode == 200) {
       if (response.statusCode == 200) {
-        String responseapi = response.body.toString().replaceAll("\n","");
-        debugPrint(responseapi);
-        ScoreBoardResponse responsedata =  ScoreBoardResponse.fromJson(responseapi);
-        scoreboard = responsedata;
+        var jsonData =  convert.jsonDecode(response.body);
 
+        for(Map i in jsonData){
+          Statistic _statistic = Statistic.fromJson(i);
+          statisticsList.add(_statistic);
+        }
         setState(() {
-          state_scoreboard = "success";
+          state_statistics = "success";
         });
       } else {
         setState(() {
-          state_scoreboard = "error";
+          state_statistics = "error";
         });
       }
     }else if(statusCode == 500){
       setState(() {
-        state_scoreboard = "error";
+        state_statistics = "error";
       });
     }
   }
@@ -834,7 +1038,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
     var response;
     var statusCode = 200;
     try {
-      response = await http.get(apiRest.tableByCompetition("2"));
+      response = await http.get(apiRest.tableByCompetition(widget.match.competition.id.toString()));
     } catch (ex) {
       statusCode = 500;
     }
@@ -862,7 +1066,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       });
     }
   }
-  Future<List<RecentMatch>>  _getEvents() async{
+  Future<List<Match>>  _getEvents() async{
     setState(() {
       state_events = "progress";
     });
@@ -870,7 +1074,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
     var response;
     var statusCode = 200;
     try {
-      response = await http.get(apiRest.matchEvents(1));
+      response = await http.get(apiRest.matchEvents(widget.match.id));
     } catch (ex) {
       statusCode = 500;
     }
@@ -908,7 +1112,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
           reverse: true,
           itemCount: eventsList.length,
           itemBuilder: (context, jndex) {
-           return buildEvent(eventsList[jndex]);
+            return buildEvent(eventsList[jndex]);
           },
         );
         break;
@@ -1197,32 +1401,9 @@ class _MatchDetailState extends State<RecentMatchDetails> {
         break;
     }
   }
-  navigate(RecentMatch match,int _tag){
-    Route match_route = MaterialPageRoute(builder: (context) => RecentMatchDetails(match :  match,tag: _tag));
+  navigate(Match match,int _tag){
+    Route match_route = MaterialPageRoute(builder: (context) => MatchDetail(match :  match,tag: _tag));
     Navigator.push(context, match_route);
-  }
-}
-
-class ExtractHeader extends StatelessWidget {
-   ExtractHeader({
-    Key key,
-    this.width,
-    this.title,
-    this.fontSize
-  }) : super(key: key);
-double width;
-final title;
-double fontSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        width: width,
-        child: Text(title, style: TextStyle(
-          color: Colors.redAccent,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w700,
-        ),));
   }
 }
 

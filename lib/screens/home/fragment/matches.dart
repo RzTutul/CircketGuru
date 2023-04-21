@@ -27,6 +27,8 @@ import 'dart:convert' as convert;
 import 'package:app/screens/tryagain.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'match_details.dart';
+
 class Matches extends StatefulWidget {
   @override
   _MatchesState createState() => _MatchesState();

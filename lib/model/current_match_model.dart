@@ -237,7 +237,7 @@ class MatchInfo {
   MatchFormat matchFormat;
   String startDate;
   String endDate;
-  MatchState state;
+  String state;
   String status;
   Team team1;
   Team team2;
@@ -261,7 +261,7 @@ class MatchInfo {
     matchFormat: matchFormatValues.map[json["matchFormat"]],
     startDate: json["startDate"],
     endDate: json["endDate"],
-    state: stateValues.map[json["state"]],
+    state: json["state"],
     status: json["status"],
     team1: Team.fromMap(json["team1"]),
     team2: Team.fromMap(json["team2"]),
@@ -282,7 +282,7 @@ class MatchInfo {
     "matchFormat": matchFormatValues.reverse[matchFormat],
     "startDate": startDate,
     "endDate": endDate,
-    "state": stateValues.reverse[state],
+    "state": state,
     "status": status,
     "team1": team1.toMap(),
     "team2": team2.toMap(),
@@ -304,12 +304,13 @@ final matchFormatValues = EnumValues({
   "TEST": MatchFormat.TEST
 });
 
-enum MatchState { COMPLETE }
+enum MatchState { IN_PROGRESS, COMPLETE, TOSS }
 
 final stateValues = EnumValues({
-  "Complete": MatchState.COMPLETE
+  "Complete": MatchState.COMPLETE,
+  "In Progress": MatchState.IN_PROGRESS,
+  "Toss": MatchState.TOSS
 });
-
 class Team {
   Team({
     this.teamId,

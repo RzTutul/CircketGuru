@@ -23,4 +23,15 @@ class HelperUtils
     print('IST time: $istString');
     return "$istString (IST)";
   }
+
+  static String convertMillisecondsToIST(int millisecondsSinceEpoch) {
+    // Calculate the IST time by adding the offset of 5 hours and 30 minutes to UTC
+    DateTime istTime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch + 5 * 60 * 60 * 1000 + 30 * 60 * 1000);
+
+    // Format the IST time as a string
+    String formattedTime = DateFormat('dd-MMMM-yyyy hh:mm a').format(istTime);
+
+    // Return the formatted IST time
+    return "${formattedTime} (IST)";
+  }
 }

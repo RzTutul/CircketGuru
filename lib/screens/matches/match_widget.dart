@@ -10,6 +10,8 @@ import 'package:app/screens/home/live_widget.dart';
 import 'package:app/screens/matches/match_detail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../home/fragment/match_details.dart';
+
 
 class MatchWidget extends StatelessWidget {
   Match match;
