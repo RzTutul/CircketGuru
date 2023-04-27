@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
+import 'package:app/model/get_over_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:facebook_audience_network/ad/ad_banner.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   List<RecentMatch> matchesList = [];
   List<Statistic> statisticsList = [];
   ScoreBoardResponse scoreboard;
+  GetOverResponse event;
   List<Event> eventsList = [];
   List<table.Table> tablesList = [];
 
@@ -59,6 +61,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   Container adContainer = Container(height: 0);
   Widget _currentAd = SizedBox(width: 0.0, height: 0.0);
   AdsProvider adsProvider;
+  Timer _timer;
 
   initBannerAds() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -120,7 +123,10 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getEvents();
+
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) => _getEvents(widget.match,fromTimer: true));
+
+    _getEvents(widget.match);
     Future.delayed(Duration(milliseconds: 500), () {
       initBannerAds();
     });
@@ -140,6 +146,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
   @override
   void dispose(){
+    _timer.cancel();
     receiver.cancel();
     super.dispose();
   }
@@ -221,10 +228,23 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                                         widget.match.matchInfo.team1.teamName,
                                                         style: TextStyle(
                                                             color: Theme.of(context).textTheme.bodyText2.color,
-                                                            fontSize: 12,
-                                                            fontWeight: FontWeight.w400
+                                                            fontSize: 13,
+                                                            fontWeight: FontWeight.w700
                                                         )
-                                                    )
+                                                    ),
+                                                       Padding(
+                                                         padding: const EdgeInsets.only(top: 8.0),
+                                                         child: Text(
+                                                             widget.match.matchScore==null?"":widget.match.matchScore.team1Score==null?"":widget.match.matchScore.team1Score.inngs1==null?"":  "${widget.match.matchScore.team1Score.inngs1.runs.toString()}/${widget.match.matchScore.team1Score.inngs1.wickets==null?"0":widget.match.matchScore.team1Score.inngs1.wickets} (${widget.match.matchScore.team1Score.inngs1.overs.toString()})",
+                                                          style: TextStyle(
+                                                              color: Theme.of(context).textTheme.bodyText2.color,
+                                                              fontSize: 13,
+                                                              fontWeight: FontWeight.w700
+                                                          )
+                                                    ),
+                                                       )
+
+
                                                   ],
                                                 ),
                                               ),
@@ -257,10 +277,20 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                                     widget.match.matchInfo.team2.teamName,
                                                     style: TextStyle(
                                                         color: Theme.of(context).textTheme.bodyText2.color,
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.w400
+                                                        fontSize: 13,
+                                                        fontWeight: FontWeight.w700
                                                     ),
-                                                  )
+                                                  ),  Padding(
+                                                    padding: const EdgeInsets.only(top: 8.0),
+                                                    child: Text(
+                                                      widget.match.matchScore==null?"":widget.match.matchScore.team2Score==null?"":widget.match.matchScore.team2Score.inngs1==null?"":  "${widget.match.matchScore.team2Score.inngs1.runs.toString()}/${widget.match.matchScore.team2Score.inngs1.wickets==null?"0":widget.match.matchScore.team2Score.inngs1.wickets} (${widget.match.matchScore.team2Score.inngs1.overs.toString()})",
+                                                      style: TextStyle(
+                                                          color: Theme.of(context).textTheme.bodyText2.color,
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w700
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -269,6 +299,9 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                       ),
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
                                   Container(
                                     height: 40,
                                     child: ListView(
@@ -276,7 +309,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                       children: [
                                         buildTab("MATCH FACTS",0),
                                         buildTab("SCOREBOARD",1),
-                                        buildTab("COMMENTARY",2),
+                                        //buildTab("COMMENTARY",2),
 
                                       ],
                                     ),
@@ -332,6 +365,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   }
   buildDetail(BuildContext context) {
 
+    return Text(widget.match.matchInfo.state);
   }
 
 
@@ -351,7 +385,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
           }
 
           if(index == 0){
-            _getEvents();
+            _getEvents(widget.match);
           }
         });
       },
@@ -411,9 +445,8 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
   Widget buildInfos() {
     return Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-      child: RefreshIndicator(
-        onRefresh: _getEvents,
-        child: ListView(
+      child: SingleChildScrollView(
+        child: Column(
           children: [
             Container(
               padding: EdgeInsets.only(top: 15,bottom: 10),
@@ -460,6 +493,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
             ),
               Divider(),
               buildEvents(),
+
           ],
         ),
       )
@@ -862,15 +896,19 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       });
     }
   }
-  Future<List<RecentMatch>>  _getEvents() async{
-    setState(() {
-      state_events = "progress";
-    });
+   _getEvents(RecentMatch match,{bool fromTimer=false}) async{
+    if(!fromTimer)
+      {
+        setState(() {
+          state_events = "progress";
+        });
+      }
+
     eventsList.clear();
     var response;
     var statusCode = 200;
     try {
-      response = await http.get(apiRest.matchEvents(1));
+      response = await apiRest.geMatchOver(match.matchInfo.matchId);
     } catch (ex) {
       statusCode = 500;
     }
@@ -878,14 +916,13 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
     if (statusCode == 200) {
       if (response.statusCode == 200) {
-        var jsonData =  convert.jsonDecode(response.body);
+        String responseapi = response.body.toString().replaceAll("\n","");
+        debugPrint(responseapi);
+        GetOverResponse responsedata =  GetOverResponse.fromJson(responseapi);
+        event = responsedata;
 
-        for(Map i in jsonData){
-          Event _event = Event.fromJson(i);
-          eventsList.add(_event);
-        }
         setState(() {
-          state_events = "success";
+          state_events= "success";
         });
       } else {
         setState(() {
@@ -902,15 +939,197 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   buildEvents() {
     switch(state_events){
       case "success":
-        return  ListView.builder(
-          shrinkWrap: true,
-          primary: false,
-          reverse: true,
-          itemCount: eventsList.length,
-          itemBuilder: (context, jndex) {
-           return buildEvent(eventsList[jndex]);
-          },
+        return   SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: 560,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      //Batting Data
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      //   child: ExtractHeader(width: 300,title: item.batTeamDetails.batTeamName,fontSize: 20,),
+                      // ),
+                      Row(
+                        children: [
+                          ExtractHeader(width: 150,title: "Batting",fontSize: 12,),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          ExtractHeader(width: 50,title: "R",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "B",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "4s",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "6s",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "SR",fontSize: 12,),
+                        ],
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 150,
+                                child: Text(event.batsmanStriker.batName)),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanStriker.batRuns}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanStriker.batBalls}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanStriker.batFours}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanStriker.batSixes}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanStriker.batStrikeRate}")),
+
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 0.6,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 150,
+                                child: Text(event.batsmanNonStriker.batName)),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanNonStriker.batRuns}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanNonStriker.batBalls}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanNonStriker.batFours}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanNonStriker.batSixes}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.batsmanNonStriker.batStrikeRate}")),
+
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(
+                        height: 20,
+                      ),
+
+                      //Balling Data
+
+                      Row(
+                        children: [
+                          ExtractHeader(width: 150,title: "Balling",fontSize: 12,),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          ExtractHeader(width: 50,title: "O",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "M",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "R",fontSize: 12,),
+                          ExtractHeader(width: 50,title: "W",fontSize: 12,),
+                        ],
+                      ),
+                      //Bolwing Data
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 150,
+                                child: Text(event.bowlerStriker.bowlName)),
+
+                            SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerStriker.bowlOvs}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerStriker.bowlMaidens}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerStriker.bowlRuns}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerStriker.bowlWkts}")),
+
+
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 0.6,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 150,
+                                child: Text(event.bowlerNonStriker.bowlName)),
+
+                            SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerNonStriker.bowlOvs}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerNonStriker.bowlMaidens}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerNonStriker.bowlRuns}")),
+                            SizedBox(
+                                width: 50,
+                                child: Text("${event.bowlerNonStriker.bowlWkts}")),
+
+
+                          ],
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: Text("Last Wicket",style: TextStyle(fontStyle: FontStyle.italic,fontWeight: FontWeight.w700),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: SizedBox(
+                            width: 300,
+                            child: Text("${event.lastWicket}")),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
         );
+
         break;
       case "progress":
         return Container(child: LoadingWidget(),height: MediaQuery.of(context).size.height/2);
@@ -919,7 +1138,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
         return Container(
           height: MediaQuery.of(context).size.height/2,
           child: TryAgainButton(action:(){
-            _getEvents();
+            _getEvents(widget.match);
           }),
         );
     };

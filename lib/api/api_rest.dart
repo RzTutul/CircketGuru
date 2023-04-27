@@ -172,7 +172,22 @@ class apiRest{
      } else {
        print('Request failed with status: ${response.statusCode}.');
      }
-
+     return response;
+  }
+ static  geMatchOver(int matchID) async{
+     final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/mcenter/v1/${matchID}/overs');
+     final headers = {
+       'X-RapidAPI-Key': 'b02f18ba79msh5aeb7cc8654aa62p1a3ec8jsnd35b04eea9f5',
+       'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com',
+       'useQueryString': 'true'
+     };
+     final response = await http.get(url, headers: headers);
+     if (response.statusCode == 200) {
+       final responseBody = jsonDecode(response.body);
+       print(responseBody);
+     } else {
+       print('Request failed with status: ${response.statusCode}.');
+     }
      return response;
   }
 
