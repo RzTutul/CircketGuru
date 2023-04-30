@@ -161,7 +161,7 @@ class apiRest{
      static  getScoreBoard(int matchID) async{
      final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/mcenter/v1/${matchID}/hscard');
      final headers = {
-       'X-RapidAPI-Key': 'b02f18ba79msh5aeb7cc8654aa62p1a3ec8jsnd35b04eea9f5',
+       'X-RapidAPI-Key': '28534cb2afmshcf773b843ad2311p17ce28jsn11c3678679bb',
        'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com',
        'useQueryString': 'true'
      };
@@ -177,7 +177,7 @@ class apiRest{
  static  geMatchOver(int matchID) async{
      final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/mcenter/v1/${matchID}/overs');
      final headers = {
-       'X-RapidAPI-Key': 'b02f18ba79msh5aeb7cc8654aa62p1a3ec8jsnd35b04eea9f5',
+       'X-RapidAPI-Key': '28534cb2afmshcf773b843ad2311p17ce28jsn11c3678679bb',
        'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com',
        'useQueryString': 'true'
      };

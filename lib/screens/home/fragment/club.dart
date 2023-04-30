@@ -229,7 +229,7 @@ class _ClubState extends State<Club> {
             itemCount: teamList.length,
             itemBuilder: (context, index) {
               if(teamList[index].id == null){
-                return TitleHomeWidget(title: "The club");
+                return TitleHomeWidget(title: "The Team");
               }else if(teamList[index].id == -1){
                 return  Container(
                   height: 55,

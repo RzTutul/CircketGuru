@@ -237,11 +237,19 @@ class _LoginState extends State<Login> {
       );
       return;
     }
+    try{
+
+
       LoginResult loaginResult = await FacebookAuth.instance.login();
       AccessToken accessToken = loaginResult.accessToken;
       final userData = await FacebookAuth.instance.getUserData();
 
       _register(userData["id"],userData["email"], userData["id"], userData["picture"]["data"]["url"], userData["name"],"facebook");
+    }
+    catch(e)
+    {
+      print(e.toString());
+    }
 
   }
 

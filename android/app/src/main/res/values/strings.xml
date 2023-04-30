@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Facebook Login Sample</string>
-    <string name="facebook_app_id">506919670433355</string>
-    <string name="fb_login_protocol_scheme">fb506919670433355</string>
+    <string name="facebook_app_id">942794513076058</string>
+    <string name="fb_login_protocol_scheme">3e3f8f0ba15f754f60f0077c9ec0ff11</string>
+    <string name="facebook_client_token">3e3f8f0ba15f754f60f0077c9ec0ff11</string>
     <string name="default_notification_channel_id" translatable="false">Link_channel</string>
 
 </resources>

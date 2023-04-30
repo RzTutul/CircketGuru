@@ -227,25 +227,30 @@ class _PostDetailState extends State<PostDetail> {
                                 ],
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.all(0),
-                              child: Html(
+                            // Container(
+                            //   margin: EdgeInsets.all(0),
+                            //   child: Html(
+                            //
+                            //     data:widget.post.content,
+                            //     style: {
+                            //       "*": Style(
+                            //         color: Theme.of(context).textTheme.bodyText1.color,
+                            //       ),
+                            //     },
+                            //     onImageTap: (url,_,__,___) {
+                            //       Route route = MaterialPageRoute(builder: (context) => ImageViewer(url:url));
+                            //       Navigator.push(context, route);
+                            //     },
+                            //     onLinkTap:(url,_,__,___){
+                            //       _launchURL(url);
+                            //     } ,
+                            //   ),
+                            // ),
 
-                                data:widget.post.content,
-                                style: {
-                                  "*": Style(
-                                    color: Theme.of(context).textTheme.bodyText1.color,
-                                  ),
-                                },
-                                onImageTap: (url,_,__,___) {
-                                  Route route = MaterialPageRoute(builder: (context) => ImageViewer(url:url));
-                                  Navigator.push(context, route);
-                                },
-                                onLinkTap:(url,_,__,___){
-                                  _launchURL(url);
-                                } ,
-                              ),
-                            ),
+                            Text(widget.post.content,style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyText1.color,
+
+                            ),),
                             SizedBox(height: 20),
                           ],
                         )

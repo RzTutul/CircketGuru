@@ -93,6 +93,8 @@ class _ArticlesListState extends State<ArticlesList> {
     should_be_displaed =adsProvider.getInterstitialClicksStep();
 
     interstitial_admob_id =adsProvider.getAdmobInterstitialId();
+    print(interstitial_admob_id);
+    print("interstitial_admob_id");
     interstitial_facebook_id =adsProvider.getFacebookInterstitialId();
     ads_interstitial_type =adsProvider.getInterstitialType();
     ads_interstitial_click = adsProvider.getInterstitialClicks();

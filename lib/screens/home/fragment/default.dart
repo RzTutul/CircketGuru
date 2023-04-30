@@ -127,6 +127,9 @@ class _DefaultState extends State<Default> {
     ads_interstitial_type =adsProvider.getInterstitialType();
     ads_interstitial_click = adsProvider.getInterstitialClicks();
 
+    print(interstitial_admob_id);
+    print("interstitial_admob_id");
+
     if(ads_interstitial_type == "ADMOB"){
       MobileAds.instance.initialize().then((InitializationStatus status) {
         print('Initialization done: ${status.adapterStatuses}');

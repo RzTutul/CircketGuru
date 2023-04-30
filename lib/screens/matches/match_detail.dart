@@ -4,6 +4,7 @@ import 'package:action_broadcast/action_broadcast.dart';
 import 'package:app/model/get_over_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:facebook_audience_network/ad/ad_banner.dart';
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:line_icons/line_icons.dart';
@@ -62,6 +63,24 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   Widget _currentAd = SizedBox(width: 0.0, height: 0.0);
   AdsProvider adsProvider;
   Timer _timer;
+
+  /* end native ads */
+
+
+  InterstitialAd _admobInterstitialAd;
+  static final AdRequest request = AdRequest();
+  Route post_route = null;
+
+  int should_be_displaed= 1;
+  int ads_interstitial_click;
+  String ads_interstitial_type;
+
+  bool _isInterstitialAdLoaded = false;
+  bool _interstitialReady = false;
+
+  String interstitial_facebook_id;
+  String interstitial_admob_id;
+
 
   initBannerAds() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -127,9 +146,10 @@ class _MatchDetailState extends State<RecentMatchDetails> {
     _timer = Timer.periodic(Duration(seconds: 10), (timer) => _getEvents(widget.match,fromTimer: true));
 
     _getEvents(widget.match);
-    Future.delayed(Duration(milliseconds: 500), () {
-      initBannerAds();
-    });
+    initBannerAds();
+
+    initInterstitialAd();
+
     receiver = registerReceiver(['matchNotif']).listen((intent){
 
       var messages = intent.data;
@@ -148,7 +168,104 @@ class _MatchDetailState extends State<RecentMatchDetails> {
   void dispose(){
     _timer.cancel();
     receiver.cancel();
+    _admobInterstitialAd?.dispose();
+
     super.dispose();
+  }
+  void initInterstitialAd() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    adsProvider =  AdsProvider(prefs,(Platform.isAndroid)?TargetPlatform.android:TargetPlatform.iOS);
+    should_be_displaed =adsProvider.getInterstitialClicksStep();
+
+    interstitial_admob_id =adsProvider.getAdmobInterstitialId();
+    interstitial_facebook_id =adsProvider.getFacebookInterstitialId();
+    ads_interstitial_type =adsProvider.getInterstitialType();
+    ads_interstitial_click = adsProvider.getInterstitialClicks();
+
+    print(interstitial_admob_id);
+    print("interstitial_admob_id");
+
+    if(ads_interstitial_type == "ADMOB"){
+      MobileAds.instance.initialize().then((InitializationStatus status) {
+        print('Initialization done: ${status.adapterStatuses}');
+        MobileAds.instance
+            .updateRequestConfiguration(RequestConfiguration(
+            tagForChildDirectedTreatment:
+            TagForChildDirectedTreatment.unspecified))
+            .then((value) {
+          createInterstitialAd();
+        });
+      });
+    }else if(ads_interstitial_type == "FACEBOOK"){
+      FacebookAudienceNetwork.init();
+      _loadInterstitialAd();
+    }else if(ads_interstitial_type == "BOTH"){
+
+      MobileAds.instance.initialize().then((InitializationStatus status) {
+        print('Initialization done: ${status.adapterStatuses}');
+        MobileAds.instance
+            .updateRequestConfiguration(RequestConfiguration(
+            tagForChildDirectedTreatment:
+            TagForChildDirectedTreatment.unspecified))
+            .then((value) {
+          createInterstitialAd();
+        });
+      });
+
+      FacebookAudienceNetwork.init();
+      _loadInterstitialAd();
+
+    }
+  }
+
+
+
+  void createInterstitialAd() {
+    if(_admobInterstitialAd != null)
+      return;
+
+    InterstitialAd.load(
+        adUnitId: interstitial_admob_id,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _admobInterstitialAd = ad;
+            _admobInterstitialAd.setImmersiveMode(true);
+            _admobInterstitialAd.show();
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _admobInterstitialAd = null;
+            _interstitialReady = false;
+            createInterstitialAd();
+          },
+        ));
+  }
+
+
+  void _loadInterstitialAd() {
+    FacebookInterstitialAd.destroyInterstitialAd();
+    FacebookInterstitialAd.loadInterstitialAd(
+      placementId:interstitial_facebook_id,
+      listener: (result, value) {
+        print(">> FAN > Interstitial Ad: $result --> $value");
+        if (result == InterstitialAdResult.LOADED){
+          _isInterstitialAdLoaded = true;
+        }
+        if(result == InterstitialAdResult.ERROR){
+
+        }
+        /// Once an Interstitial Ad has been dismissed and becomes invalidated,
+        /// load a fresh Ad by calling this function.
+        if (result == InterstitialAdResult.DISMISSED ) {
+          if(post_route != null)
+            _isInterstitialAdLoaded = false;
+          _loadInterstitialAd();
+          Navigator.push(context, post_route);
+        }
+      },
+    );
   }
 
 

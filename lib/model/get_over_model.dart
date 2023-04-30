@@ -75,7 +75,7 @@ class GetOverResponse {
     matchScoreDetails: MatchScoreDetails.fromMap(json["matchScoreDetails"]),
     latestPerformance: List<LatestPerformance>.from(json["latestPerformance"].map((x) => LatestPerformance.fromMap(x))),
     ppData: PpData.fromMap(json["ppData"]),
-    matchUdrs: MatchUdrs.fromMap(json["matchUdrs"]),
+    matchUdrs:json["matchUdrs"]==null?null: MatchUdrs.fromMap(json["matchUdrs"]),
     overSummaryList: List<OverSummaryList>.from(json["overSummaryList"].map((x) => OverSummaryList.fromMap(x))),
     status: json["status"],
     lastWicketScore: json["lastWicketScore"],

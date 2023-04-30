@@ -29,7 +29,11 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
-        <activity android:name="com.facebook.FacebookActivity"
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token"/>
+
+      <!--  <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
@@ -42,7 +46,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
-        </activity>
+        </activity>-->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -106,5 +110,12 @@
                 <data android:path="callback" />
             </intent-filter>
         </activity>
+
     </application>
+
+    <!-- for facebook permission(if sdk is greater then 30)-->
+    <queries>
+        <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
+    </queries>
+    <!--(if facebook doesn`t integrate then remove till)-->
 </manifest>
