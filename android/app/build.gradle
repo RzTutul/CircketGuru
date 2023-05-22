@@ -35,6 +35,9 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
+    aaptOptions {
+        cruncherEnabled = false
+    }
     compileSdk 33
 
     sourceSets {
