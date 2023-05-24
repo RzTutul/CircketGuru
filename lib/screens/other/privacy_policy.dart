@@ -69,7 +69,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
             child:
             Column(
               children: [
-            /*    Container(
+                Container(
                   margin: EdgeInsets.all(5),
                   child: Html(
                     data:_data,
@@ -86,9 +86,9 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
                       _launchURL(url);
                     } ,
                   ),
-                ),*/
+                ),
 
-                Text(_data,style: TextStyle(  color: Theme.of(context).textTheme.bodyText1.color,),),
+             //  Text(_data,style: TextStyle(  color: Theme.of(context).textTheme.bodyText1.color,),),
                 SizedBox(height: 20),
               ],
             )
