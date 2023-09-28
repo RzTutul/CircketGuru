@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
+import 'package:app/global_helper.dart';
 import 'package:app/model/get_over_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:facebook_audience_network/ad/ad_banner.dart';
@@ -336,10 +337,10 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                                           borderRadius: BorderRadius.circular(10),
                                                           border: Border.all(color: Theme.of(context).accentColor,width: 2)
                                                       ),
-                                                     /* child: Padding(
+                                                      child: Padding(
                                                         padding: const EdgeInsets.all(8.0),
-                                                        child: CachedNetworkImage(imageUrl: widget.match.homeclub.image),
-                                                      ),*/
+                                                        child: Image.asset(HelperUtils.getFlagFromName(widget.match.matchInfo.team1.teamSName)),
+                                                      ),
                                                     ),
                                                     Text(
                                                         widget.match.matchInfo.team1.teamName,
@@ -385,10 +386,10 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                                         borderRadius: BorderRadius.circular(10),
                                                         border: Border.all(color: Theme.of(context).accentColor,width: 2)
                                                     ),
-                                                   /* child: Padding(
+                                                    child: Padding(
                                                       padding: const EdgeInsets.all(8.0),
-                                                      child: CachedNetworkImage(imageUrl: widget.match.awayclub.image),
-                                                    ),*/
+                                                      child: Image.asset(HelperUtils.getFlagFromName(widget.match.matchInfo.team2.teamSName)),
+                                                    ),
                                                   ),
                                                   Text(
                                                     widget.match.matchInfo.team2.teamName,

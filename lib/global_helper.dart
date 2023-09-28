@@ -1,5 +1,6 @@
 
 import 'package:intl/intl.dart';
+enum CountryFlag { bangladesh, india, nepal, pakistan, sriLanka, afghanistan, defaultFlag }
 
 class HelperUtils
 {
@@ -33,5 +34,33 @@ class HelperUtils
 
     // Return the formatted IST time
     return "${formattedTime} (IST)";
+  }
+
+ static String getFlagFromName(String teamName) {
+    switch (teamName) {
+      case 'PAK':
+        return "assets/images/pakistan.png";
+      case 'NEP':
+        return "assets/images/nepal_flag.png";
+      case 'IND':
+        return "assets/images/India.png";
+      case 'BAN':
+        return "assets/images/bangladesh_flag.png";
+      case 'AFG':
+        return "assets/images/afghanistan_flag.png";
+      case 'SL':
+        return "assets/images/sri_lanka.png";
+        case 'ENG':
+        return "assets/images/england_flag.png";
+        case 'AUS':
+        return "assets/images/austrila_flag.png";
+case 'NZ':
+        return "assets/images/new_zealand_flag.png";
+case 'WI':
+        return "assets/images/west_indies_flag.png";
+
+      default:
+        return "assets/images/flag_placeholder.png";
+    }
   }
 }
