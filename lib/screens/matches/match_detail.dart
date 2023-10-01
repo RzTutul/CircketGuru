@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
 import 'package:app/global_helper.dart';
+import 'package:app/model/commentry.dart';
 import 'package:app/model/get_over_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:facebook_audience_network/ad/ad_banner.dart';
@@ -46,13 +47,16 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
   List<RecentMatch> matchesList = [];
   List<Statistic> statisticsList = [];
+  List<Statistic> commentaryList = [];
   ScoreBoardResponse scoreboard;
+  CommentaryResponse commentary;
   GetOverResponse event;
   List<Event> eventsList = [];
   List<table.Table> tablesList = [];
 
   String state_matches =  "progress";
   String state_scoreboard =  "progress";
+  String state_commentary =  "progress";
   String state_events =  "progress";
   String state_raking =  "progress";
   StreamSubscription receiver;
@@ -427,7 +431,7 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                                       children: [
                                         buildTab("MATCH FACTS",0),
                                         buildTab("SCOREBOARD",1),
-                                        //buildTab("COMMENTARY",2),
+                                        buildTab("COMMENTARY",2),
 
                                       ],
                                     ),
@@ -495,11 +499,13 @@ class _MatchDetailState extends State<RecentMatchDetails> {
           if(index == 4){
             _getMatchsList(widget.match);
           }
+
+          if(index == 2){
+            _getCommentry(widget.match);
+          }
+
           if(index == 1){
             _getStatistics(widget.match);
-          }
-          if(index == 3){
-            _getTables();
           }
 
           if(index == 0){
@@ -815,95 +821,39 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
   }
   Widget buildHightlights() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: (){
-            //_launchURL(widget.match.highlights);
-          },
-          child: Container(
-            margin: EdgeInsets.all(10),
-            height: 200,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.black,
-                gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    stops: [
-                      0.6,
-                      0.9
-                    ],
-                    colors: [
-                      Colors.black,
-                      Theme.of(context).accentColor
-                    ]),
-              borderRadius: BorderRadius.circular(10)
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 25,
-                  left: 15,
-                  child: Text(
-                    "RecentMatch Hightlights",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                        color:  Colors.white
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 55,
-                   left: 15,
-                    child: Text(
-                      widget.match.matchInfo.team1.teamName,
-                      style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w900,
-                          color:  Colors.white
-                      ),
-                    ),
-                ),
-                Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: Icon(
-                    Icons.play_circle_filled_rounded,
-                    color: Colors.white,
-                    size: 35,
-                  ),
-                ),
-                Positioned(
-                  left: 10,
-                  bottom: 10,
-                  child:Row(
-                    children: [
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                            Text(
-                              widget.match.matchInfo.state,
-                              style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w800
-                              ),
-                            ),
 
-                        ],
-                      ),
-                      SizedBox(width: 10),
-                    ],
-                  )
-                )
-              ],
+    switch(state_commentary){
+      case "success":
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: (){
+                //_launchURL(widget.match.highlights);
+              },
+              child: ListView.builder(
+                  itemCount: commentary.commentaryList.length,
+                  itemBuilder: (context,index){
+                    CommentaryList c =   commentary.commentaryList[index];
+                    return ListTile(
+                      title: Text(c.commText),
+                    );
+                  }),
             ),
-          ),
-        ),
-      ],
-    );
+          ],
+        );
+        break;
+      case "progress":
+        return Container(child: LoadingWidget(),height: MediaQuery.of(context).size.height/2);
+        break;
+      default:
+        return Container(
+          height: MediaQuery.of(context).size.height/2,
+          child: TryAgainButton(action:(){
+            _getCommentry(widget.match);
+          }),
+        );
+    }
+
   }
   Future<List<RecentMatch>>  _getMatchsList(RecentMatch match) async{
     setState(() {
@@ -978,6 +928,44 @@ class _MatchDetailState extends State<RecentMatchDetails> {
       });
     }
   }
+
+    Future<List<RecentMatch>>  _getCommentry(RecentMatch match) async{
+    setState(() {
+      state_commentary = "progress";
+    });
+
+    var response;
+    var statusCode = 200;
+    try {
+      response = await apiRest.getCommentary(match.matchInfo.matchId);
+    } catch (ex) {
+      statusCode = 500;
+    }
+
+
+    if (statusCode == 200) {
+      if (response.statusCode == 200) {
+        String responseapi = response.body.toString().replaceAll("\n","");
+        debugPrint(responseapi);
+        CommentaryResponse responsedata =  CommentaryResponse.fromJson(responseapi);
+        commentary = responsedata;
+
+        setState(() {
+          state_commentary = "success";
+        });
+      } else {
+        setState(() {
+          state_commentary = "error";
+        });
+      }
+    }else if(statusCode == 500){
+      setState(() {
+        state_commentary = "error";
+      });
+    }
+  }
+
+
   Future<List<table.Table>>  _getTables() async{
     setState(() {
       state_raking = "progress";
@@ -1240,6 +1228,9 @@ class _MatchDetailState extends State<RecentMatchDetails> {
                             width: 300,
                             child: Text("${event.lastWicket}")),
                       ),
+
+
+
                     ],
                   )
                 ],

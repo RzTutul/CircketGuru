@@ -353,7 +353,7 @@ class _MatchesState extends State<CurrentMatches> {
                          margin: EdgeInsets.only(left: 10,right: 10,bottom: 5,top: 5),
                          child: Column(
                            children: <Widget>[
-                             match.seriesAdWrapper==null?SizedBox.shrink():InkWell(
+                             if (match.seriesAdWrapper==null) SizedBox.shrink() else InkWell(
                                onTap: (){
                                  item_selected=jndex;
                                  item_selected_status=!item_selected_status;
@@ -371,14 +371,19 @@ class _MatchesState extends State<CurrentMatches> {
 
 
                                      SizedBox(width: 5),
-                                       Text(
-                                       match.seriesAdWrapper==null?"":match.seriesAdWrapper.seriesName,
-                                       style: TextStyle(
-                                           fontSize: 14,
-                                           fontWeight: FontWeight.bold,
-                                           color:  Colors.redAccent
-                                       ),
+                                       Expanded(
+                                         child: Padding(
+                                           padding: const EdgeInsets.all(8.0),
+                                           child: Text(
+                                           match.seriesAdWrapper==null?"":match.seriesAdWrapper.seriesName,
+                                           style: TextStyle(
+                                               fontSize: 14,
+                                               fontWeight: FontWeight.bold,
+                                               color:  Colors.redAccent
+                                           ),
                                      ),
+                                         ),
+                                       ),
 
                                      Icon(Icons.arrow_drop_down)
                                    ],

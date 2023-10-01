@@ -41,6 +41,7 @@ class MatchMiniWidget extends StatelessWidget {
             child:Column(
               children: <Widget>[
                 Container(
+                  padding: EdgeInsets.all(5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,12 +53,14 @@ class MatchMiniWidget extends StatelessWidget {
                           color:  Theme.of(context).textTheme.bodyText2.color,
                         ),
                         SizedBox(width: 5),
-                        Text(
-                          match.competition.name +" - "+match.title,
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color:  Theme.of(context).textTheme.bodyText2.color
+                        Expanded(
+                          child: Text(
+                            match.competition.name +" - "+match.title,
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color:  Theme.of(context).textTheme.bodyText2.color
+                            ),
                           ),
                         ),
                       ],

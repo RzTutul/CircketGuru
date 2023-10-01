@@ -191,6 +191,23 @@ class apiRest{
      return response;
   }
 
+ static  getCommentary(int matchID) async{
+     final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/mcenter/v1/${matchID}/comm');
+     final headers = {
+       'X-RapidAPI-Key': '28534cb2afmshcf773b843ad2311p17ce28jsn11c3678679bb',
+       'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com',
+       'useQueryString': 'true'
+     };
+     final response = await http.get(url, headers: headers);
+     if (response.statusCode == 200) {
+       final responseBody = jsonDecode(response.body);
+       print(responseBody);
+     } else {
+       print('Request failed with status: ${response.statusCode}.');
+     }
+     return response;
+  }
+
 
 
    static Uri getLiveMatch() {
