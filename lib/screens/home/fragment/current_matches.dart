@@ -233,8 +233,8 @@ class _MatchesState extends State<CurrentMatches> {
 
 
         MatchTypeData data1 = MatchTypeData(id: 0,name: "live",image: "assets/images/live_icon.png",selected: true);
-        MatchTypeData data2 = MatchTypeData(id: 0,name: "recent",image: "assets/images/cricket.png",selected: false);
-        MatchTypeData data3 = MatchTypeData(id: 0,name: "upcoming",image: "assets/images/upcoming.png",selected: false);
+        MatchTypeData data2 = MatchTypeData(id: 1,name: "recent",image: "assets/images/cricket.png",selected: false);
+        MatchTypeData data3 = MatchTypeData(id: 2,name: "upcoming",image: "assets/images/upcoming.png",selected: false);
         selected_competition =data1;
         competitionsList.add(data1);
         competitionsList.add(data2);

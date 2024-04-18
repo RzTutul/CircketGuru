@@ -26,9 +26,9 @@ class CommentaryResponse {
   String toJson() => json.encode(toMap());
 
   factory CommentaryResponse.fromMap(Map<String, dynamic> json) => CommentaryResponse(
-    commentaryList: List<CommentaryList>.from(json["commentaryList"].map((x) => CommentaryList.fromMap(x))),
+    commentaryList:["commentaryList"]==null?[]: List<CommentaryList>.from(json["commentaryList"].map((x) => CommentaryList.fromMap(x))),
     matchHeader: MatchHeader.fromMap(json["matchHeader"]),
-    miniscore: Miniscore.fromMap(json["miniscore"]),
+    miniscore:json["miniscore"]==null?null: Miniscore.fromMap(json["miniscore"]),
     commentarySnippetList: List<dynamic>.from(json["commentarySnippetList"].map((x) => x)),
     page: json["page"],
     enableNoContent: json["enableNoContent"],
@@ -120,7 +120,7 @@ class CommentaryFormats {
   String toJson() => json.encode(toMap());
 
   factory CommentaryFormats.fromMap(Map<String, dynamic> json) => CommentaryFormats(
-    bold: Bold.fromMap(json["bold"]),
+    bold:json["bold"]==null?null: Bold.fromMap(json["bold"]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -252,7 +252,7 @@ class OverSeparator {
     bowlRuns: json["bowlRuns"],
     bowlWickets: json["bowlWickets"],
     timestamp: json["timestamp"],
-    overNum: json["overNum"].toDouble(),
+    overNum: json["overNum"],
     batTeamName: batTeamNameValues.map[json["batTeamName"]],
     event: eventValues.map[json["event"]],
   );
@@ -607,11 +607,11 @@ class Miniscore {
   BatTeam batTeam;
   BowlerStriker bowlerStriker;
   BowlerStriker bowlerNonStriker;
-  int overs;
-  int target;
+  num overs;
+  num target;
   PartnerShip partnerShip;
   double currentRunRate;
-  int requiredRunRate;
+  num requiredRunRate;
   String lastWicket;
   MatchScoreDetails matchScoreDetails;
   List<LatestPerformance> latestPerformance;
@@ -620,10 +620,10 @@ class Miniscore {
   String status;
   int ballsRem;
   double runsPerBall;
-  int requiredRunsPerBall;
-  int lastWicketScore;
-  int remRunsToWin;
-  int responseLastUpdated;
+  num requiredRunsPerBall;
+  num lastWicketScore;
+  num remRunsToWin;
+  num responseLastUpdated;
 
   Miniscore({
     this.inningsId,
@@ -665,7 +665,7 @@ class Miniscore {
     overs: json["overs"],
     target: json["target"],
     partnerShip: PartnerShip.fromMap(json["partnerShip"]),
-    currentRunRate: json["currentRunRate"].toDouble(),
+    currentRunRate: json["currentRunRate"],
     requiredRunRate: json["requiredRunRate"],
     lastWicket: json["lastWicket"],
     matchScoreDetails: MatchScoreDetails.fromMap(json["matchScoreDetails"]),
@@ -674,7 +674,7 @@ class Miniscore {
     overSummaryList: List<dynamic>.from(json["overSummaryList"].map((x) => x)),
     status: json["status"],
     ballsRem: json["ballsRem"],
-    runsPerBall: json["runsPerBall"].toDouble(),
+    runsPerBall: json["runsPerBall"],
     requiredRunsPerBall: json["requiredRunsPerBall"],
     lastWicketScore: json["lastWicketScore"],
     remRunsToWin: json["remRunsToWin"],
@@ -772,7 +772,7 @@ class BatsmanNStriker {
     batMins: json["batMins"],
     batRuns: json["batRuns"],
     batSixes: json["batSixes"],
-    batStrikeRate: json["batStrikeRate"].toDouble(),
+    batStrikeRate: json["batStrikeRate"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -826,14 +826,14 @@ class BowlerStriker {
     bowlName: json["bowlName"],
     bowlMaidens: json["bowlMaidens"],
     bowlNoballs: json["bowlNoballs"],
-    bowlOvs: json["bowlOvs"].toDouble(),
+    bowlOvs: json["bowlOvs"],
     bowlRuns: json["bowlRuns"],
     bowlWides: json["bowlWides"],
     bowlWkts: json["bowlWkts"],
-    bowlEcon: json["bowlEcon"].toDouble(),
+    bowlEcon: json["bowlEcon"],
     bowlDots: json["bowlDots"],
     bowlBalls: json["bowlBalls"],
-    runsPerBall: json["runsPerBall"].toDouble(),
+    runsPerBall: json["runsPerBall"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -965,7 +965,7 @@ class InningsScoreList {
     batTeamName: json["batTeamName"],
     score: json["score"],
     wickets: json["wickets"],
-    overs: json["overs"].toDouble(),
+    overs: json["overs"],
     isDeclared: json["isDeclared"],
     isFollowOn: json["isFollowOn"],
     ballNbr: json["ballNbr"],

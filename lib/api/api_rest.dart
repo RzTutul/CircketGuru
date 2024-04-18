@@ -158,6 +158,26 @@ class apiRest{
 
      return response;
   }
+
+
+ static  getLiveMatchData(String matchType) async{
+     final response = await http.get(Uri.parse("http://cricpro.cricnet.co.in/api/values/${matchType}"));
+    print(response.body);
+     return response;
+  }
+   static  getMatchDetails(String matchID) async{
+     final response = await http.post(Uri.parse("http://cricpro.cricnet.co.in/api/values/LiveLine_Match"),body: {
+       "MatchId":matchID
+     });
+    print(response.body);
+     return response;
+  }
+
+
+
+
+
+
      static  getScoreBoard(int matchID) async{
      final url = Uri.https('cricbuzz-cricket.p.rapidapi.com', '/mcenter/v1/${matchID}/hscard');
      final headers = {

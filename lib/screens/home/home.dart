@@ -33,6 +33,7 @@ import 'dart:convert' as convert;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'fragment/current_matches.dart';
+import 'fragment/current_matches_v2.dart';
 
 class Home extends StatefulWidget {
 
@@ -62,7 +63,7 @@ class _HomeState extends ResumableState<Home> {
 
   List<Widget> fragments =[
     Default(),
-    CurrentMatches(),
+    CurrentMatchesV2(),
     Matches(),
     Ranking(),
     Club(),

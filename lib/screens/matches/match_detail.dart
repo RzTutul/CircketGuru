@@ -824,22 +824,36 @@ class _MatchDetailState extends State<RecentMatchDetails> {
 
     switch(state_commentary){
       case "success":
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: (){
-                //_launchURL(widget.match.highlights);
-              },
-              child: ListView.builder(
-                  itemCount: commentary.commentaryList.length,
-                  itemBuilder: (context,index){
-                    CommentaryList c =   commentary.commentaryList[index];
-                    return ListTile(
-                      title: Text(c.commText),
-                    );
-                  }),
-            ),
-          ],
+        return GestureDetector(
+          onTap: (){
+            //_launchURL(widget.match.highlights);
+          },
+          child: ListView.builder(
+            shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              itemCount: commentary.commentaryList.length,
+              itemBuilder: (context,index){
+                CommentaryList c =   commentary.commentaryList[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          flex: 1,
+                          child: Text("${c.overNumber==null?"":c.overNumber}")),
+                      Expanded(
+                          flex: 2,
+                          child: Text("${c.event==null?"":c.event.name}")),
+                      Expanded(
+                          flex: 4,
+                          child: Text(c.commText)),
+
+                    ],
+                  ),
+                );
+
+              }),
         );
         break;
       case "progress":
