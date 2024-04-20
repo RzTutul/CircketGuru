@@ -165,8 +165,32 @@ class apiRest{
     print(response.body);
      return response;
   }
+
+  static  getMatchResult(String start,String end) async{
+    final response = await http.post(Uri.parse("http://cricpro.cricnet.co.in/api/values/MatchResults"),body:
+    {"start": "1","end":"20"});
+    print(response.body);
+    return response;
+  }
+
    static  getMatchDetails(String matchID) async{
      final response = await http.post(Uri.parse("http://cricpro.cricnet.co.in/api/values/LiveLine_Match"),body: {
+       "MatchId":matchID
+     });
+    print(response.body);
+     return response;
+  }
+
+
+  static  getAllPlayer(String matchID) async{
+     final response = await http.post(Uri.parse("http://cricpro.cricnet.co.in/api/values/GetAllPlayers"),body: {
+       "MatchId":matchID
+     });
+    print(response.body);
+     return response;
+  }
+  static  getMatchStats(String matchID) async{
+     final response = await http.post(Uri.parse("http://cricpro.cricnet.co.in/api/values/MatchStats"),body: {
        "MatchId":matchID
      });
     print(response.body);

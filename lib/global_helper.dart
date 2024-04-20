@@ -63,4 +63,49 @@ case 'WI':
         return "assets/images/flag_placeholder.png";
     }
   }
+
+  String extractCRR(String text) {
+    if (text.contains("C.RR")) {
+      RegExp regex = RegExp(r'C\.RR: (\d+\.\d+)');
+      Match match = regex.firstMatch(text);
+      if (match != null) {
+        return match.group(1);
+      } else {
+        return '0';
+      }
+    }
+  }
+
+    String getStrikerSR(String run, String ball) {
+    double runs = double.parse(run);
+    double balls = double.parse(ball);
+    double strikeRate = (runs / balls) * 100;
+    return strikeRate.toStringAsFixed(1);
+
+  }
+  String getNonStrikerSR(String run, String ball) {
+    double runs = double.parse(run);
+    double balls = double.parse(ball);
+    double strikeRate = (runs / balls) * 100;
+    return strikeRate.toStringAsFixed(1);
+  }
+
+
+
+  String extractRRR(String text) {
+    if (text.contains("R.RR")) {
+      RegExp regex = RegExp(r'R\.RR: (\d+\.\d+)');
+      Match match = regex.firstMatch(text);
+      if (match != null) {
+        return match.group(1);
+      } else {
+        return '0';
+      }
+    }
+  }
+
+
+
+
+
 }

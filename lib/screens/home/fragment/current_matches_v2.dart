@@ -222,7 +222,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
     initNativeAd();
     refreshing = false;
     _getList();
-    //_startTimer();
+    _startTimer();
 
     listViewController.addListener(_scrollListener);
   }
@@ -256,18 +256,29 @@ class _MatchesState extends State<CurrentMatchesV2> {
         image: "assets/images/live_icon.png",
         selected: true);
 
+
+
     MatchTypeData data2 = MatchTypeData(
         id: 1,
         name: "upcoming",
         value: "upcomingMatches",
         image: "assets/images/upcoming.png",
         selected: false);
+
+       MatchTypeData data3 = MatchTypeData(
+        id: 2,
+        name: "result",
+        value: "MatchResults",
+        image: "assets/images/cricket.png",
+        selected: false);
+
+
     selected_competition = data1;
     competitionsList.add(data1);
     competitionsList.add(data2);
+    competitionsList.add(data3);
 
     setState(() {
-      state = "success";
       state_matches = "progress";
       _getMatchsList(selected_competition);
     });
@@ -294,6 +305,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
         matchesList = data.map((json) => MatchLiveData.fromMap(json)).toList();
         setState(() {
           state = "success";
+
           state_matches = "success";
         });
       } else {
@@ -308,13 +320,19 @@ class _MatchesState extends State<CurrentMatchesV2> {
     }
   }
 
-  Future<List<TypeMatch>> _getUpcommingList(
-      MatchTypeData selected_competition) async {
+  Future<List<TypeMatch>> _getUpcommingList(MatchTypeData selected_competition,{isAllMatch=false}) async {
     page = 0;
     var response;
     var statusCode = 200;
     try {
-      response = await apiRest.getLiveMatchData(selected_competition.value);
+      if(isAllMatch)
+        {
+          response = await apiRest.getMatchResult("1","20");
+        }
+      else
+        {
+          response = await apiRest.getLiveMatchData(selected_competition.value);
+        }
     } catch (ex) {
       print("exfdsf");
       print(ex);
@@ -326,7 +344,6 @@ class _MatchesState extends State<CurrentMatchesV2> {
             UpcommingResponse.fromJson(response.body);
         upcomingMatchesList = responsedata.allMatch;
         setState(() {
-          state = "success";
           state_matches = "success";
         });
       } else {
@@ -340,6 +357,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
       });
     }
   }
+
 
   Widget buildHome() {
     switch (state) {
@@ -354,10 +372,12 @@ class _MatchesState extends State<CurrentMatchesV2> {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return TitleHomeWidget(title: "Current Matches");
-              } else if (index == 1) {
+              }
+              else if (index == 1) {
                 return MatchTypeWidget(
                     competitions: competitionsList, action: selectTables);
-              } else if (index == 2) {
+              }
+              else if (index == 2) {
                 switch (state_matches) {
                   case "success":
                     return ListView.builder(
@@ -366,209 +386,18 @@ class _MatchesState extends State<CurrentMatchesV2> {
                       itemCount: upcomingMatchesList.length,
                       itemBuilder: (context, jndex) {
                         AllMatch match = upcomingMatchesList[jndex];
-                        return Container(
-                          margin: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black54.withOpacity(0.3),
-                                    offset: Offset(0, 0),
-                                    blurRadius: 5)
-                              ]),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).accentColor,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10))),
-                                child: Text(
-                                  match.title,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          CachedNetworkImage(
-                                            imageUrl:
-                                                "${match.imageUrl}${match.teamAImage}",
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              width: 50.0,
-                                              height: 50.0,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: Text(
-                                              match.teamA,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1
-                                                      .color,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                      flex: 1,
-                                      child: Image.asset(
-                                        "assets/images/vs.png",
-                                        width: 50,
-                                        height: 50,
-                                      )),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        children: [
-                                          CachedNetworkImage(
-                                            imageUrl:
-                                                "${match.imageUrl}${match.teamBImage}",
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              width: 50.0,
-                                              height: 50.0,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: Text(
-                                              match.teamB,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1
-                                                      .color,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  " ${match.matchtime}",
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          .color,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 5),
-                                child: Text(
-                                  match.venue,
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          .color,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-
-                    break;
-                  case "progress":
-                    return Container(
-                        child: LoadingWidget(),
-                        height: MediaQuery.of(context).size.height / 2);
-                    break;
-                  default:
-                    return Container(
-                      height: MediaQuery.of(context).size.height / 2,
-                      child: TryAgainButton(action: () {
-                        refreshing = false;
-                        _getList();
-                      }),
-                    );
-                }
-              } else {
-                switch (state_matches) {
-                  case "success":
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: matchesList.length,
-                      itemBuilder: (context, jndex) {
-                        MatchLiveData match = matchesList[jndex];
-                        Map<String, dynamic> runsData = jsonDecode(
-                            match.jsonruns.toString().replaceAll("\n", ""));
-                        Map<String, dynamic> matchData = jsonDecode(
-                            match.jsondata.toString().replaceAll("\n", ""));
-                        String teamABanner = matchData['jsondata']['TeamABanner'];
-                        String teamBBanner = matchData['jsondata']['TeamBBanner'];
-
-                        String teamA = matchData['jsondata']['teamA'];
-                        String teamB = matchData['jsondata']['teamB'];
-
-                        String wicketA = matchData['jsondata']['wicketA'];
-                        String wicketB = matchData['jsondata']['wicketB'];
-                        String bowler = matchData['jsondata']['bowler'];
-                        String matchId = matchData['jsondata']['MatchId'];
-                        String title = matchData['jsondata']['title'];
                         return InkWell(
                           onTap: (){
+                            if(selected_competition.id==2)
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MatchDetailV2(
-                                          match: title,
-                                      matchid: matchId,
+                                    builder: (context) =>
+                                        MatchDetailV2(
+                                          match: match.title,
+                                          matchid: "${match.matchId}",
                                         )));
+
                           },
                           child: Container(
                             margin: EdgeInsets.all(10),
@@ -611,7 +440,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                           children: [
                                             CachedNetworkImage(
                                               imageUrl:
-                                                  "${match.imgeUrl}${teamABanner}",
+                                                  "${match.imageUrl}${match.teamAImage}",
                                               imageBuilder:
                                                   (context, imageProvider) =>
                                                       Container(
@@ -624,12 +453,20 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                                       fit: BoxFit.cover),
                                                 ),
                                               ),
+                                              errorWidget: (context, url, error) => Container(
+                                                width: 50,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade200,
+                                                ),
+                                              ),
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.symmetric(
                                                   vertical: 8.0),
                                               child: Text(
-                                                teamA,
+                                                match.teamA,
                                                 style: TextStyle(
                                                     color: Theme.of(context)
                                                         .textTheme
@@ -638,16 +475,6 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold),
                                               ),
-                                            ),
-                                            Text(
-                                              wicketA,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1
-                                                      .color,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ],
                                         ),
@@ -668,7 +495,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                           children: [
                                             CachedNetworkImage(
                                               imageUrl:
-                                                  "${match.imgeUrl}${teamBBanner}",
+                                                  "${match.imageUrl}${match.teamBImage}",
                                               imageBuilder:
                                                   (context, imageProvider) =>
                                                       Container(
@@ -681,12 +508,20 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                                       fit: BoxFit.cover),
                                                 ),
                                               ),
+                                              errorWidget: (context, url, error) => Container(
+                                                width: 50,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey.shade200,
+                                                ),
+                                              ),
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.symmetric(
                                                   vertical: 8.0),
                                               child: Text(
-                                                teamB,
+                                                match.teamB,
                                                 style: TextStyle(
                                                     color: Theme.of(context)
                                                         .textTheme
@@ -695,16 +530,6 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold),
                                               ),
-                                            ),
-                                            Text(
-                                              wicketB,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1
-                                                      .color,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ],
                                         ),
@@ -739,6 +564,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
+
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -747,31 +573,21 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                           bottomLeft: Radius.circular(10),
                                           bottomRight: Radius.circular(10))),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .center,
                                     children: [
-                                      bowler != "0"
-                                          ? Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              width: 20,
-                                              height: 20,
-                                              decoration: ShapeDecoration(
-                                                  color: Colors.green,
-                                                  shape: CircleBorder()),
-                                            )
-                                          : SizedBox.shrink(),
+
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8.0),
                                         child: Center(
                                           child: Text(
-                                            match.result.trim().length > 0
+                                            match.result != null
                                                 ? match.result
-                                                : bowler != "0"
-                                                    ? "Live"
-                                                    : "Upcoming",
+                                                : "Upcoming",
                                             style: TextStyle(
-                                                color: Theme.of(context)
+                                                color: Theme
+                                                    .of(context)
                                                     .textTheme
                                                     .bodyText1
                                                     .color,
@@ -783,10 +599,323 @@ class _MatchesState extends State<CurrentMatchesV2> {
                                     ],
                                   ),
                                 ),
+
                               ],
                             ),
                           ),
                         );
+                      },
+                    );
+
+                    break;
+                  case "progress":
+                    return Container(
+                        child: LoadingWidget(),
+                        height: MediaQuery.of(context).size.height / 2);
+                    break;
+                  default:
+                    return Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: TryAgainButton(action: () {
+                        refreshing = false;
+                        _getList();
+                      }),
+                    );
+                }
+              }
+              else {
+                switch (state_matches) {
+                  case "success":
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: matchesList.length,
+                      itemBuilder: (context, jndex) {
+                        MatchLiveData match = matchesList[jndex];
+
+                        if (match.jsondata.toString().length > 0) {
+                          Map<String, dynamic> matchData = jsonDecode(
+                              match.jsondata.toString().replaceAll("\n", ""));
+                          String teamABanner = matchData['jsondata']['TeamABanner'];
+                          String teamBBanner = matchData['jsondata']['TeamBBanner'];
+
+                          String teamA = matchData['jsondata']['teamA'];
+                          String teamB = matchData['jsondata']['teamB'];
+
+                          String wicketA = matchData['jsondata']['wicketA'];
+                          String wicketB = matchData['jsondata']['wicketB'];
+                          String bowler = matchData['jsondata']['bowler'];
+                          String matchId = matchData['jsondata']['MatchId'];
+                          String title = matchData['jsondata']['title'];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MatchDetailV2(
+                                            match: title,
+                                            matchid: matchId,
+                                          )));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: Theme
+                                      .of(context)
+                                      .cardColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black54.withOpacity(0.3),
+                                        offset: Offset(0, 0),
+                                        blurRadius: 5)
+                                  ]),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Theme
+                                            .of(context)
+                                            .accentColor,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10))),
+                                    child: Text(
+                                      match.title,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: [
+                                              CachedNetworkImage(
+                                                imageUrl:
+                                                "${match
+                                                    .imgeUrl}${teamABanner}",
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                    Container(
+                                                      width: 50.0,
+                                                      height: 50.0,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image: imageProvider,
+                                                            fit: BoxFit.cover),
+                                                      ),
+                                                    ),
+                                                errorWidget: (context, url, error) => Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey.shade200,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .symmetric(
+                                                    vertical: 8.0),
+                                                child: Text(
+                                                  teamA,
+                                                  style: TextStyle(
+                                                      color: Theme
+                                                          .of(context)
+                                                          .textTheme
+                                                          .bodyText1
+                                                          .color,
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight
+                                                          .bold),
+                                                ),
+                                              ),
+                                              Text(
+                                                wicketA,
+                                                style: TextStyle(
+                                                    color: Theme
+                                                        .of(context)
+                                                        .textTheme
+                                                        .bodyText1
+                                                        .color,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight
+                                                        .bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                          flex: 1,
+                                          child: Image.asset(
+                                            "assets/images/vs.png",
+                                            width: 50,
+                                            height: 50,
+                                          )),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              CachedNetworkImage(
+                                                imageUrl:
+                                                "${match
+                                                    .imgeUrl}${teamBBanner}",
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                    Container(
+                                                      width: 50.0,
+                                                      height: 50.0,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image: imageProvider,
+                                                            fit: BoxFit.cover),
+                                                      ),
+                                                    ),
+                                                errorWidget: (context, url, error) => Container(
+                                                  width: 50,
+                                                  height: 50,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey.shade200,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .symmetric(
+                                                    vertical: 8.0),
+                                                child: Text(
+                                                  teamB,
+                                                  style: TextStyle(
+                                                      color: Theme
+                                                          .of(context)
+                                                          .textTheme
+                                                          .bodyText1
+                                                          .color,
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight
+                                                          .bold),
+                                                ),
+                                              ),
+                                              Text(
+                                                wicketB,
+                                                style: TextStyle(
+                                                    color: Theme
+                                                        .of(context)
+                                                        .textTheme
+                                                        .bodyText1
+                                                        .color,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight
+                                                        .bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      " ${match.matchtime}",
+                                      style: TextStyle(
+                                          color: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .color,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 5),
+                                    child: Text(
+                                      match.venue,
+                                      style: TextStyle(
+                                          color: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .color,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10))),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
+                                      children: [
+                                        bowler != "0"
+                                            ? Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          width: 20,
+                                          height: 20,
+                                          decoration: ShapeDecoration(
+                                              color: Colors.green,
+                                              shape: CircleBorder()),
+                                        )
+                                            : SizedBox.shrink(),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8.0),
+                                          child: Center(
+                                            child: Text(
+                                              match.result
+                                                  .trim()
+                                                  .length > 0
+                                                  ? match.result
+                                                  : bowler != "0"
+                                                  ? "Live"
+                                                  : "Upcoming",
+                                              style: TextStyle(
+                                                  color: Theme
+                                                      .of(context)
+                                                      .textTheme
+                                                      .bodyText1
+                                                      .color,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
                       },
                     );
 
@@ -822,61 +951,6 @@ class _MatchesState extends State<CurrentMatchesV2> {
     }
   }
 
-  buildTab(String s, int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selected_index = index;
-          if (index == 4) {
-            // _getMatchsList(widget.match);
-          }
-          if (index == 1) {
-            // _getStatistics(widget.match);
-          }
-          if (index == 3) {
-            // _getTables();
-          }
-
-          if (index == 0) {
-            //_getEvents();
-          }
-        });
-      },
-      child: Container(
-        color: Theme.of(context).primaryColor,
-        margin: EdgeInsets.only(right: 2),
-        padding: EdgeInsets.only(left: 10, right: 10, top: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              s,
-              style: TextStyle(
-                  color: (selected_index == index)
-                      ? Theme.of(context).textTheme.subtitle1.color
-                      : Theme.of(context)
-                          .textTheme
-                          .subtitle2
-                          .color
-                          .withOpacity(0.5),
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold),
-            ),
-            Visibility(
-              visible: (selected_index == index),
-              child: Container(
-                height: 4,
-                width: 65,
-                color: Theme.of(context).accentColor,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -926,8 +1000,13 @@ class _MatchesState extends State<CurrentMatchesV2> {
       if (competition.id == 0) {
         _getMatchsList(selected_competition);
       } else if (competition.id == 1) {
-        _getUpcommingList(selected_competition);
+        _getUpcommingList(selected_competition,isAllMatch: false);
       }
+      else if (competition.id == 2) {
+        _getUpcommingList(selected_competition,isAllMatch: true);
+      }
+
+
       for (MatchTypeData c in competitionsList) c.selected = false;
       competition.selected = true;
     });
