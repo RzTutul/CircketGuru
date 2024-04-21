@@ -10,6 +10,7 @@ import 'package:app/model/match_type.dart';
 import 'package:app/screens/home/fragment/match_details.dart';
 import 'package:app/screens/home/fragment/match_details_v2.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:facebook_audience_network/ad/ad_interstitial.dart';
 import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:flutter/material.dart';
@@ -918,7 +919,6 @@ class _MatchesState extends State<CurrentMatchesV2> {
                         }
                       },
                     );
-
                     break;
                   case "progress":
                     return Container(

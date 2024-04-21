@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:app/api/api_config.dart';
 import 'package:app/provider/ads_provider.dart';
@@ -665,11 +666,14 @@ class _HomeState extends ResumableState<Home> {
   }
 
   rateApp() async{
-    final InAppReview inAppReview = InAppReview.instance;
+    // final InAppReview inAppReview = InAppReview.instance;
+    //
+    // if (await inAppReview.isAvailable()) {
+    //     inAppReview.requestReview();
+    // }
 
-    if (await inAppReview.isAvailable()) {
-        inAppReview.requestReview();
-    }
+    LaunchReview.launch(androidAppId: "com.cricketguru.app",
+        iOSAppId: "com.cricketguru.app");
   }
 
   Future initAppInfos() async {
