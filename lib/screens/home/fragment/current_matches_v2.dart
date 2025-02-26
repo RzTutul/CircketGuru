@@ -203,6 +203,7 @@ class _MatchesState extends State<CurrentMatchesV2> {
             print('$ad loaded');
             _admobInterstitialAd = ad;
             _admobInterstitialAd.setImmersiveMode(true);
+
           },
           onAdFailedToLoad: (LoadAdError error) {
             print('InterstitialAd failed to load: $error.');
@@ -219,8 +220,8 @@ class _MatchesState extends State<CurrentMatchesV2> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initInterstitialAd();
-    initNativeAd();
+    // initInterstitialAd();
+    // initNativeAd();
     refreshing = false;
     _getList();
     _startTimer();

@@ -175,6 +175,7 @@ class _DefaultState extends State<Default> {
   void dispose() {
     _admobInterstitialAd?.dispose();
     super.dispose();
+    _timer.cancel();
   }
   void createInterstitialAd() {
     if(_admobInterstitialAd != null)
@@ -207,12 +208,16 @@ class _DefaultState extends State<Default> {
     initInterstitialAd();
     initNativeAd();
     _getList();
+
+    super.initState();
+    initAppInfos();
+
     if (mounted) {
       _startTimer();
     }
-    super.initState();
-    initAppInfos();
   }
+
+
   void _startTimer() {
     // Create a timer that fires every second
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {

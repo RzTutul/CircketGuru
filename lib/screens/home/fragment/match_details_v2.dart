@@ -177,11 +177,20 @@ class _MatchDetailV2State extends State<MatchDetailV2> {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            InfoMatch(widget.matchid),
-            AllPlayer(widget.matchid),
-            Stats(widget.matchid),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  InfoMatch(widget.matchid),
+                  AllPlayer(widget.matchid),
+                  Stats(widget.matchid),
+                ],
+              ),
+
+            ),
+            adContainer,
+            _currentAd
           ],
         ),
       ),

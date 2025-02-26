@@ -62,7 +62,7 @@ class _StatsState extends State<Stats> {
   Widget build(BuildContext context) {
     switch (state_matches) {
       case "success":
-        return  new DefaultTabController(
+        return matchst.length>0? new DefaultTabController(
           length: 3,
           child: new Scaffold(
             appBar: new PreferredSize(
@@ -107,7 +107,7 @@ class _StatsState extends State<Stats> {
               ],
             ),
           ),
-        );
+        ):SizedBox.shrink();
         break;
       case "progress":
         return Container(
